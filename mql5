@@ -1,0 +1,161 @@
+
+//+------------------------------------------------------------------+
+//|                                           Super Taurus Gold.mq5 |
+//|                        Copyright © 2021, Forex Robot Easy Team   |
+//|                                     https://www.forexroboteasy.com|
+//+------------------------------------------------------------------+
+#property version   '1.00'
+#property strict
+#property indicator_chart_window
+#property indicator_buffers 2
+#property indicator_color1 Lime
+#property indicator_color2 Red
+
+// Define input parameters
+input int stopLoss = 100; // Stop loss level in pips
+input int takeProfit = 200; // Take profit level in pips
+input int period = PERIOD_H1; // Chart period for analysis
+
+// Define global variables
+double buffer1[];
+double buffer2[];
+
+//+------------------------------------------------------------------+
+//| Custom indicator initialization function                         |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+   // Set indicator buffers
+   SetIndexBuffer(0, buffer1, INDICATOR_DATA);
+   SetIndexBuffer(1, buffer2, INDICATOR_DATA);
+   
+   // Set indicator labels
+   SetIndexLabel(0, 'Buy Signals');
+   SetIndexLabel(1, 'Sell Signals');
+   
+   // Set indicator style
+   SetIndexStyle(0, DRAW_ARROW);
+   SetIndexStyle(1, DRAW_ARROW);
+   
+   // Set indicator parameters
+   IndicatorSetInteger(INDICATOR_DIGITS, Digits);
+   IndicatorSetString(INDICATOR_SHORTNAME, 'Super Taurus Gold');
+   
+   return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Custom indicator deinitialization function                       |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+   // Remove indicator buffers
+   DeleteIndexBuffer(0);
+   DeleteIndexBuffer(1);
+}
+
+//+------------------------------------------------------------------+
+//| Custom indicator calculation function                            |
+//+------------------------------------------------------------------+
+int OnCalculate(const int rates_total,
+                const int prev_calculated,
+                const datetime &time[],
+                const double &open[],
+                const double &high[],
+                const double &low[],
+                const double &close[],
+                const long &tick_volume[],
+                const long &volume[],
+                const int &spread[])
+{
+   int limit = rates_total - prev_calculated;
+
+   // Perform technical analysis
+   for(int i = prev_calculated; i < rates_total; i++)
+   {
+      // Perform fundamental analysis
+      if(IsNewsEvent(time[i]))
+      {
+         // Update software with current news and economic events
+         UpdateSoftware();
+      }
+      
+      // Scrutinize charts and market indicators
+      double indicatorValue = GetIndicatorValue();
+      
+      // Determine entry and exit points
+      if(indicatorValue > 0)
+      {
+         buffer1[i] = high[i];
+         buffer2[i] = 0;
+      }
+      else if(indicatorValue < 0)
+      {
+         buffer1[i] = 0;
+         buffer2[i] = low[i];
+      }
+   }
+   
+   // Execute trades based on signal
+   for(int i = prev_calculated; i < rates_total; i++)
+   {
+      // Buy signal
+      if(buffer1[i] > 0)
+      {
+         double stopLossPrice = close[i] - stopLoss * Point;
+         double takeProfitPrice = close[i] + takeProfit * Point;
+         
+         // Place stop-loss and take-profit orders
+         PlaceOrder(OrderType.BUY, stopLossPrice, takeProfitPrice);
+      }
+      
+      // Sell signal
+      if(buffer2[i] > 0)
+      {
+         double stopLossPrice = close[i] + stopLoss * Point;
+         double takeProfitPrice = close[i] - takeProfit * Point;
+         
+         // Place stop-loss and take-profit orders
+         PlaceOrder(OrderType.SELL, stopLossPrice, takeProfitPrice);
+      }
+   }
+   
+   return(rates_total);
+}
+
+//+------------------------------------------------------------------+
+//| Check if there is any news event                                 |
+//+------------------------------------------------------------------+
+bool IsNewsEvent(const datetime &time)
+{
+   // Check if there is any news event
+   // Implement logic to determine if there is a news event
+   return(true);
+}
+
+//+------------------------------------------------------------------+
+//| Update software with current news and economic events             |
+//+------------------------------------------------------------------+
+void UpdateSoftware()
+{
+   // Implement logic to update software with current news and economic events
+}
+
+//+------------------------------------------------------------------+
+//| Get indicator value                                               |
+//+------------------------------------------------------------------+
+double GetIndicatorValue()
+{
+   // Implement logic to get the value of the indicator
+   return(1.0);
+}
+
+//+------------------------------------------------------------------+
+//| Place a trade order                                               |
+//+------------------------------------------------------------------+
+void PlaceOrder(const ENUM_ORDER_TYPE type,
+                const double stopLossPrice,
+                const double takeProfitPrice)
+{
+   // Implement logic to place a trade order
+}
